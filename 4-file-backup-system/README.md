@@ -97,7 +97,7 @@ An incremental backup copies only files that are new or have been modified since
 
 A differential backup copies files that have been modified within a specified time period (e.g., the last 7 days). This is useful when you want to back up recent changes without a full backup history.
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -139,6 +139,10 @@ Log results and clean up
   v
 END
 ```
+
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart4.png)
+
 
 ## Log File Format
 

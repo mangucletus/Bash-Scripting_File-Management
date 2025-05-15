@@ -51,7 +51,7 @@ Moved: video.mp4 to /home/cletusmangu/Downloads/Videos
 File sorting completed successfully!
 ```
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -86,6 +86,11 @@ For each file in the directory:
   v
 END: Display completion message
 ```
+
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart1.png)
+
+
 
 ## Customization
 

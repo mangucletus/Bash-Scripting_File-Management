@@ -117,7 +117,7 @@ my_document.docx
 meeting_notes.txt
 ```
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -147,6 +147,9 @@ Print completion message
   v
 END
 ```
+
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart2.png)
 
 ## Understanding the Script
 

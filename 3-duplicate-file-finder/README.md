@@ -82,7 +82,7 @@ The script uses a multi-step approach to efficiently find duplicates:
 
 This approach is much more efficient than comparing every file against every other file, especially for large directories.
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -122,6 +122,10 @@ Clean up temporary files
   v
 END
 ```
+
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart3.png)
+
 
 ## Technical Details
 
