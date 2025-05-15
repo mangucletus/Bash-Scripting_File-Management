@@ -28,7 +28,7 @@ This repository contains seven different file management utilities, each designe
 - Conditional statements
 - Directory management
 
-[Detailed Documentation for Automatic File Sorter](./file_sorter/README.md)
+[Detailed Documentation for Automatic File Sorter](./automatic-file-sorter/README.md)
 
 ## Bulk File Renamer
 
@@ -47,7 +47,7 @@ This repository contains seven different file management utilities, each designe
 - Command-line argument parsing
 - String formatting
 
-[Detailed Documentation for Bulk File Renamer](./file_renamer/README.md)
+[Detailed Documentation for Bulk File Renamer](./bulk-file-renamer/README.md)
 
 ## Duplicate File Finder
 
@@ -66,7 +66,7 @@ This repository contains seven different file management utilities, each designe
 - Array manipulation
 - Interactive user interfaces
 
-[Detailed Documentation for Duplicate File Finder](./duplicate_finder/README.md)
+[Detailed Documentation for Duplicate File Finder](./duplicate-file-finder/README.md)
 
 ## File Backup System
 
@@ -85,7 +85,7 @@ This repository contains seven different file management utilities, each designe
 - Task scheduling
 - Compression algorithms
 
-[Detailed Documentation for File Backup System](./backup_system/README.md)
+[Detailed Documentation for File Backup System](./file-backup-system/README.md)
 
 ## Disk Space Analyzer
 
@@ -103,7 +103,7 @@ This repository contains seven different file management utilities, each designe
 - Output formatting
 - Data visualization techniques
 
-[Detailed Documentation for Disk Space Analyzer](./space_analyzer/README.md)
+[Detailed Documentation for Disk Space Analyzer](./disk-space-analyzer/README.md)
 
 ## File Encryption Tool
 
@@ -121,7 +121,7 @@ This repository contains seven different file management utilities, each designe
 - Input/output operations
 - Security best practices
 
-[Detailed Documentation for File Encryption Tool](./encryption_tool/README.md)
+[Detailed Documentation for File Encryption Tool](./file-encryption-tool/README.md)
 
 ## File Sync Utility
 
@@ -138,7 +138,7 @@ This repository contains seven different file management utilities, each designe
 - Logging systems
 - Conflict resolution strategies
 
-[Detailed Documentation for File Sync Utility](./sync_utility/README.md)
+[Detailed Documentation for File Sync Utility](./file-sync-utility/README.md)
 
 ## Installation and Usage
 
