@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Styles -->
+  <style>
+    .box {
+      fill: white;
+      stroke: #333;
+      stroke-width: 2;
+      rx: 5;
+      ry: 5;
+    }
+    .diamond {
+      fill: white;
+      stroke: #333;
+      stroke-width: 2;
+    }
+    .arrow {
+      stroke: #333;
+      stroke-width: 2;
+      marker-end: url(#arrowhead);
+    }
+    text {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="300" y="25" class="title">File Encryption/Decryption Script Flow</text>
+  
+  <!-- Start node -->
+  <rect x="225" y="50" width="150" height="40" class="box" />
+  <text x="300" y="70">Start Script</text>
+  
+  <!-- Check OpenSSL -->
+  <rect x="225" y="130" width="150" height="40" class="box" />
+  <text x="300" y="150">Check OpenSSL</text>
+  
+  <!-- Parse Arguments -->
+  <rect x="225" y="210" width="150" height="40" class="box" />
+  <text x="300" y="230">Parse Arguments</text>
+  
+  <!-- Decision Diamond -->
+  <polygon points="300,290 350,330 300,370 250,330" class="diamond" />
+  <text x="300" y="330">Action?</text>
+  
+  <!-- Encrypt node -->
+  <rect x="125" y="390" width="150" height="40" class="box" />
+  <text x="200" y="410">Encrypt</text>
+  
+  <!-- Decrypt node -->
+  <rect x="325" y="390" width="150" height="40" class="box" />
+  <text x="400" y="410">Decrypt</text>
+  
+  <!-- Get Password (Encrypt) -->
+  <rect x="125" y="470" width="150" height="40" class="box" />
+  <text x="200" y="490">Get Password</text>
+  
+  <!-- Get Password (Decrypt) -->
+  <rect x="325" y="470" width="150" height="40" class="box" />
+  <text x="400" y="490">Get Password</text>
+  
+  <!-- Encrypt File -->
+  <rect x="125" y="550" width="150" height="40" class="box" />
+  <text x="200" y="570">Encrypt File</text>
+  
+  <!-- Decrypt File -->
+  <rect x="325" y="550" width="150" height="40" class="box" />
+  <text x="400" y="570">Decrypt File</text>
+  
+  <!-- End node -->
+  <rect x="225" y="630" width="150" height="40" class="box" />
+  <text x="300" y="650">End</text>
+  
+  <!-- Arrows -->
+  <!-- Start to Check OpenSSL -->
+  <line x1="300" y1="90" x2="300" y2="130" class="arrow" />
+  
+  <!-- Check OpenSSL to Parse Arguments -->
+  <line x1="300" y1="170" x2="300" y2="210" class="arrow" />
+  
+  <!-- Parse Arguments to Decision -->
+  <line x1="300" y1="250" x2="300" y2="290" class="arrow" />
+  
+  <!-- Decision to Encrypt -->
+  <line x1="250" y1="330" x2="200" y2="330" class="arrow" />
+  <line x1="200" y1="330" x2="200" y2="390" class="arrow" />
+  
+  <!-- Decision to Decrypt -->
+  <line x1="350" y1="330" x2="400" y2="330" class="arrow" />
+  <line x1="400" y1="330" x2="400" y2="390" class="arrow" />
+  
+  <!-- Encrypt to Get Password (Encrypt) -->
+  <line x1="200" y1="430" x2="200" y2="470" class="arrow" />
+  
+  <!-- Decrypt to Get Password (Decrypt) -->
+  <line x1="400" y1="430" x2="400" y2="470" class="arrow" />
+  
+  <!-- Get Password (Encrypt) to Encrypt File -->
+  <line x1="200" y1="510" x2="200" y2="550" class="arrow" />
+  
+  <!-- Get Password (Decrypt) to Decrypt File -->
+  <line x1="400" y1="510" x2="400" y2="550" class="arrow" />
+  
+  <!-- Encrypt File to End -->
+  <line x1="200" y1="590" x2="200" y2="610" class="arrow" />
+  <line x1="200" y1="610" x2="300" y2="610" class="arrow" />
+  <line x1="300" y1="610" x2="300" y2="630" class="arrow" />
+  
+  <!-- Decrypt File to End -->
+  <line x1="400" y1="590" x2="400" y2="610" class="arrow" />
+  <line x1="400" y1="610" x2="300" y2="610" class="arrow" />
+</svg>

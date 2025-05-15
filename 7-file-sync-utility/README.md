@@ -114,6 +114,9 @@ The script uses a combination of existence checks, modification times, and MD5 c
 │Copy to dest    │      │Copy to source  │
 └────────────────┘      └────────────────┘
 ```
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart7.svg)
+
 
 ### Conflict Resolution
 

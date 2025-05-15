@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Styles -->
+  <style>
+    .box {
+      fill: white;
+      stroke: #333;
+      stroke-width: 2;
+      rx: 5;
+      ry: 5;
+    }
+    .diamond {
+      fill: white;
+      stroke: #333;
+      stroke-width: 2;
+    }
+    .arrow {
+      stroke: #333;
+      stroke-width: 2;
+      marker-end: url(#arrowhead);
+    }
+    text {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="350" y="25" class="title">File Comparison and Synchronization Workflow</text>
+  
+  <!-- Source File -->
+  <rect x="120" y="50" width="150" height="40" class="box" />
+  <text x="195" y="70">Source File</text>
+  
+  <!-- Dest File -->
+  <rect x="430" y="50" width="150" height="40" class="box" />
+  <text x="505" y="70">Dest File</text>
+  
+  <!-- Both exist? -->
+  <rect x="275" y="130" width="150" height="40" class="box" />
+  <text x="350" y="150">Both exist?</text>
+  
+  <!-- Only one exists -->
+  <rect x="120" y="220" width="150" height="40" class="box" />
+  <text x="195" y="240">Only one exists</text>
+  
+  <!-- Compare MD5 -->
+  <rect x="430" y="220" width="150" height="40" class="box" />
+  <text x="505" y="240">Compare MD5</text>
+  
+  <!-- Copy missing file -->
+  <rect x="120" y="300" width="150" height="40" class="box" />
+  <text x="195" y="320">Copy missing file</text>
+  
+  <!-- Files differ? -->
+  <rect x="430" y="300" width="150" height="40" class="box" />
+  <text x="505" y="320">Files differ?</text>
+  
+  <!-- Compare mod time -->
+  <rect x="310" y="380" width="150" height="40" class="box" />
+  <text x="385" y="400">Compare mod time</text>
+  
+  <!-- Files identical -->
+  <rect x="550" y="380" width="150" height="40" class="box" />
+  <text x="625" y="400">Files identical</text>
+  
+  <!-- Source newer -->
+  <rect x="200" y="460" width="150" height="40" class="box" />
+  <text x="275" y="480">Source newer</text>
+  
+  <!-- Dest newer -->
+  <rect x="420" y="460" width="150" height="40" class="box" />
+  <text x="495" y="480">Dest newer</text>
+  
+  <!-- Copy to dest -->
+  <rect x="200" y="540" width="150" height="40" class="box" />
+  <text x="275" y="560">Copy to dest</text>
+  
+  <!-- Copy to source -->
+  <rect x="420" y="540" width="150" height="40" class="box" />
+  <text x="495" y="560">Copy to source</text>
+  
+  <!-- Arrows -->
+  <!-- Source File to Both exist? -->
+  <line x1="195" y1="90" x2="195" y2="110" class="arrow" />
+  <line x1="195" y1="110" x2="350" y2="110" class="arrow" />
+  <line x1="350" y1="110" x2="350" y2="130" class="arrow" />
+  
+  <!-- Dest File to Both exist? -->
+  <line x1="505" y1="90" x2="505" y2="110" class="arrow" />
+  <line x1="505" y1="110" x2="350" y2="110" class="arrow" />
+  
+  <!-- Both exist? branch -->
+  <line x1="350" y1="170" x2="350" y2="190" class="arrow" />
+  
+  <!-- Both exist? to Only one exists -->
+  <line x1="350" y1="190" x2="195" y2="190" class="arrow" />
+  <line x1="195" y1="190" x2="195" y2="220" class="arrow" />
+  
+  <!-- Both exist? to Compare MD5 -->
+  <line x1="350" y1="190" x2="505" y2="190" class="arrow" />
+  <line x1="505" y1="190" x2="505" y2="220" class="arrow" />
+  
+  <!-- Only one exists to Copy missing file -->
+  <line x1="195" y1="260" x2="195" y2="300" class="arrow" />
+  
+  <!-- Compare MD5 to Files differ? -->
+  <line x1="505" y1="260" x2="505" y2="300" class="arrow" />
+  
+  <!-- Files differ? branch -->
+  <line x1="505" y1="340" x2="505" y2="360" class="arrow" />
+  
+  <!-- Files differ? to Compare mod time -->
+  <line x1="505" y1="360" x2="385" y2="360" class="arrow" />
+  <line x1="385" y1="360" x2="385" y2="380" class="arrow" />
+  
+  <!-- Files differ? to Files identical -->
+  <line x1="505" y1="360" x2="625" y2="360" class="arrow" />
+  <line x1="625" y1="360" x2="625" y2="380" class="arrow" />
+  
+  <!-- Compare mod time branch -->
+  <line x1="385" y1="420" x2="385" y2="440" class="arrow" />
+  
+  <!-- Compare mod time to Source newer -->
+  <line x1="385" y1="440" x2="275" y2="440" class="arrow" />
+  <line x1="275" y1="440" x2="275" y2="460" class="arrow" />
+  
+  <!-- Compare mod time to Dest newer -->
+  <line x1="385" y1="440" x2="495" y2="440" class="arrow" />
+  <line x1="495" y1="440" x2="495" y2="460" class="arrow" />
+  
+  <!-- Source newer to Copy to dest -->
+  <line x1="275" y1="500" x2="275" y2="540" class="arrow" />
+  
+  <!-- Dest newer to Copy to source -->
+  <line x1="495" y1="500" x2="495" y2="540" class="arrow" />
+</svg>

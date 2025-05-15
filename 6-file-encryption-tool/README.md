@@ -138,6 +138,10 @@ Decrypt a file:
     └───────────┘
 ```
 
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart6.svg)
+
+
 ## Best Practices
 
 1. Use strong, unique passwords for different files

@@ -143,6 +143,9 @@ Clean up temporary files
   v
 END
 ```
+## Actual Flow Diagram
+![Flow Chart](./images/flow-chart5.png)
+
 
 ## Technical Details
 

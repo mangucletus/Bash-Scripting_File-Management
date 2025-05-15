@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# File Encryption Tool
-# This script encrypts and decrypts files using OpenSSL AES-256-CBC encryption
+# File Encryption Tool: this script encrypts and decrypts files using OpenSSL AES-256-CBC encryption
 # Usage: ./file_encryption.sh [encrypt|decrypt] [input_file] [output_file]
 
 # Display help message
