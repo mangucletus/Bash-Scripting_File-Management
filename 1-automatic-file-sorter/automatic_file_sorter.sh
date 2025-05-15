@@ -1,56 +1,77 @@
 #!/bin/bash
 
-# Automatic File Sorter
-# This script organizes files in a folder based on their file extensions
+# -------------------------------
+# Automatic File Sorter Script
+# -------------------------------
+# This script helps organize files in a specified directory
+# into categorized folders based on their file extensions.
+# Categories include: Documents, Images, Videos, Audio, Archives, Others.
 
-# Check if directory path is provided
+# -------------------------------
+# Step 1: Input Validation
+# -------------------------------
+
+# Check if the user has provided a directory path as an argument.
 if [ $# -eq 0 ]; then
     echo "Please provide a directory path."
-    echo "Usage: $0 /path/to/directory"
-    exit 1
+    echo "Usage: $0 /path/to/directory"  # Shows how to use the script
+    exit 1  # Exit the script if no directory is provided
 fi
 
-# Set the source directory from command line argument
+# Assign the first command-line argument to the variable 'source_dir'
 source_dir="$1"
 
-# Check if the provided path is a valid directory
+# Check if the provided path actually exists and is a directory
 if [ ! -d "$source_dir" ]; then
     echo "Error: $source_dir is not a valid directory!"
-    exit 1
+    exit 1  # Exit if the path is not a directory
 fi
 
+# Inform the user that file sorting is starting
 echo "Starting to organize files in: $source_dir"
 
-# Function to create category folders if they don't exist
+# -------------------------------
+# Step 2: Folder Creation
+# -------------------------------
+
+# Define a function that creates folders for each file category
 create_folders() {
-    # Create category folders
-    mkdir -p "$source_dir/Documents"
-    mkdir -p "$source_dir/Images"
-    mkdir -p "$source_dir/Videos"
-    mkdir -p "$source_dir/Audio"
-    mkdir -p "$source_dir/Archives"
-    mkdir -p "$source_dir/Others"
-    
+    # Use 'mkdir -p' to create folders if they don't exist already
+    mkdir -p "$source_dir/Documents"  # For document files
+    mkdir -p "$source_dir/Images"     # For image files
+    mkdir -p "$source_dir/Videos"     # For video files
+    mkdir -p "$source_dir/Audio"      # For audio files
+    mkdir -p "$source_dir/Archives"   # For compressed files
+    mkdir -p "$source_dir/Others"     # For uncategorized or unknown file types
+
     echo "Category folders created successfully."
 }
 
-# Function to move files to appropriate folders
+# -------------------------------
+# Step 3: File Sorting Logic
+# -------------------------------
+
+# Define a function to sort files into the correct category folders
 sort_files() {
-    # Loop through all files in the source directory
+    # Iterate over each item in the source directory
     for file in "$source_dir"/*; do
-        # Skip if it's a directory
+        # Skip directories, only process files
         if [ -d "$file" ]; then
-            continue
+            continue  # Go to the next item
         fi
-        
-        # Get the file extension (convert to lowercase for consistency)
+
+        # Extract the filename from the path
         filename=$(basename "$file")
+
+        # Extract the file extension (everything after the last '.')
         extension="${filename##*.}"
+
+        # Convert the extension to lowercase to ensure consistent matching
         extension=$(echo "$extension" | tr '[:upper:]' '[:lower:]')
-        
-        # Determine target folder based on file extension
+
+        # Decide the destination folder based on the file extension
         case "$extension" in
-            # Document files
+            # Document files (Word, Excel, PDF, etc.)
             pdf|doc|docx|txt|rtf|odt|xls|xlsx|ppt|pptx|csv)
                 target_dir="$source_dir/Documents"
                 ;;
@@ -66,24 +87,28 @@ sort_files() {
             mp3|wav|ogg|flac|aac|wma)
                 target_dir="$source_dir/Audio"
                 ;;
-            # Archive files
+            # Archive/compressed files
             zip|rar|tar|gz|7z)
                 target_dir="$source_dir/Archives"
                 ;;
-            # All other files
+            # Anything else goes into the 'Others' folder
             *)
                 target_dir="$source_dir/Others"
                 ;;
         esac
-        
-        # Move the file to the target directory
+
+        # Move the file to the determined target directory
         mv "$file" "$target_dir/"
         echo "Moved: $filename to $target_dir"
     done
 }
 
-# Main program execution
-create_folders
-sort_files
+# -------------------------------
+# Step 4: Execute the Functions
+# -------------------------------
 
+create_folders  # First, create all the required category folders
+sort_files      # Then, start sorting and moving files
+
+# Inform the user that sorting is complete
 echo "File sorting completed successfully!"

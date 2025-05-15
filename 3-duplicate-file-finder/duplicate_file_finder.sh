@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Duplicate File Finder: This script finds duplicate files in a directory based on size and content
+# Duplicate File Finder: This script finds duplicate files in a directory
+# by grouping them first by size, then comparing their contents using MD5 checksums.
 
-# Function to display help information
+# Function: Display help information and usage examples
 show_help() {
     echo "Duplicate File Finder - Find and manage duplicate files"
     echo ""
@@ -23,30 +24,30 @@ show_help() {
     echo ""
 }
 
-# Initialize variables
-interactive=false
-auto_delete=false
-move_dir=""
-recursive=false
-directory=""
+# Initialize default option values
+interactive=false    # Whether to prompt user for action on each duplicate
+auto_delete=false    # Whether to automatically delete duplicates
+move_dir=""          # Directory to move duplicates to, if specified
+recursive=false      # Whether to scan subdirectories recursively
+directory=""         # Target directory to scan for duplicates
 
-# Parse command line arguments
+# Parse command line options using getopts
 while getopts "idm:rh" opt; do
     case $opt in
-        i) interactive=true ;;
-        d) auto_delete=true ;;
-        m) move_dir="$OPTARG" ;;
-        r) recursive=true ;;
-        h) show_help; exit 0 ;;
-        \?) echo "Invalid option: -$OPTARG" >&2; show_help; exit 1 ;;
+        i) interactive=true ;;          # Enable interactive mode
+        d) auto_delete=true ;;          # Enable automatic deletion of duplicates
+        m) move_dir="$OPTARG" ;;        # Set target directory to move duplicates
+        r) recursive=true ;;            # Enable recursive directory scanning
+        h) show_help; exit 0 ;;         # Show help and exit
+        \?) echo "Invalid option: -$OPTARG" >&2; show_help; exit 1 ;; # Handle unknown options
     esac
 done
 
-# Get directory from the remaining arguments
+# Get the positional argument after options (the target directory)
 shift $((OPTIND - 1))
 directory="$1"
 
-# Check if directory is provided and valid
+# Validate directory argument
 if [ -z "$directory" ]; then
     echo "Error: Directory not specified"
     show_help
@@ -58,7 +59,7 @@ if [ ! -d "$directory" ]; then
     exit 1
 fi
 
-# Check if move directory exists or create it
+# If a move directory is specified, ensure it exists or create it
 if [ ! -z "$move_dir" ] && [ ! -d "$move_dir" ]; then
     echo "Creating directory for duplicates: $move_dir"
     mkdir -p "$move_dir"
@@ -68,89 +69,79 @@ if [ ! -z "$move_dir" ] && [ ! -d "$move_dir" ]; then
     fi
 fi
 
-# Create a temporary directory for our processing
+# Create a temporary directory for intermediate files
 temp_dir=$(mktemp -d)
 if [ $? -ne 0 ]; then
     echo "Error: Failed to create temporary directory"
     exit 1
 fi
 
-# Clean up the temporary directory when the script exits
+# Ensure temporary files are cleaned up when the script exits
 trap 'rm -rf "$temp_dir"' EXIT
 
 echo "Starting duplicate file scan in: $directory"
 echo "This might take a while depending on the number and size of files..."
 
-# Function to find files
+# Function: Find all files in the target directory
+# Supports optional recursive search
 find_files() {
     local search_dir="$1"
     
     if [ "$recursive" = true ]; then
-        find "$search_dir" -type f
+        find "$search_dir" -type f   # Include subdirectories
     else
-        find "$search_dir" -maxdepth 1 -type f
+        find "$search_dir" -maxdepth 1 -type f   # Only current directory
     fi
 }
 
-# Step 1: Group files by size (first level filter)
+# Step 1: Group files by their size in bytes
 echo "Step 1: Grouping files by size..."
 find_files "$directory" | while read file; do
-    # Get file size in bytes
-    size=$(stat -c %s "$file")
-    
-    # Add filename to the size group file
-    echo "$file" >> "$temp_dir/size_$size"
+    size=$(stat -c %s "$file")              # Get file size in bytes
+    echo "$file" >> "$temp_dir/size_$size" # Append filename to a size group file
 done
 
-# Step 2: For each size group with more than one file, compare by md5 hash
+# Step 2: Within each size group, compare files using MD5 checksums
 echo "Step 2: Comparing file contents with MD5 hashes..."
 duplicates_found=0
 
 for size_file in "$temp_dir"/size_*; do
-    # Skip if file doesn't exist (no files of this size)
-    [ -f "$size_file" ] || continue
-    
-    # If there's only one file of this size, it can't be a duplicate
+    [ -f "$size_file" ] || continue        # Skip if the file doesn't exist
+
     if [ $(wc -l < "$size_file") -le 1 ]; then
-        continue
+        continue    # Skip groups with only one file
     fi
-    
-    # Process each file in this size group
+
     while read file; do
-        # Calculate MD5 hash
-        hash=$(md5sum "$file" | cut -d ' ' -f 1)
-        
-        # Store hash -> file mapping
-        echo "$file" >> "$temp_dir/hash_$hash"
+        hash=$(md5sum "$file" | cut -d ' ' -f 1)       # Compute MD5 hash
+        echo "$file" >> "$temp_dir/hash_$hash"         # Group by hash
     done < "$size_file"
 done
 
-# Step 3: Report and handle duplicates
+# Step 3: Process the groups of duplicate files
 echo "Step 3: Processing duplicate files..."
 
 for hash_file in "$temp_dir"/hash_*; do
-    # Skip if file doesn't exist
     [ -f "$hash_file" ] || continue
-    
-    # If there's only one file with this hash, it's not a duplicate
+
     if [ $(wc -l < "$hash_file") -le 1 ]; then
-        continue
+        continue    # Skip unique hashes
     fi
-    
-    # Get the list of duplicate files
+
+    # Read duplicate files into an array
     duplicates=($(cat "$hash_file"))
-    original_file="${duplicates[0]}"
-    
+    original_file="${duplicates[0]}"   # First file is considered the original
+
     echo "Found duplicate files (hash: $(basename "$hash_file" | cut -d '_' -f 2)):"
     echo "  Original: $original_file"
-    
-    # Process each duplicate (skip the first one which is our "original")
+
+    # Process each duplicate file (excluding the original)
     for ((i=1; i<${#duplicates[@]}; i++)); do
         duplicate="${duplicates[$i]}"
         echo "  Duplicate: $duplicate"
-        
-        # Handle the duplicate based on options
+
         if [ "$interactive" = true ]; then
+            # Prompt user for action
             echo "What would you like to do with this duplicate?"
             echo "  [k]eep - Keep the duplicate"
             echo "  [d]elete - Delete the duplicate"
@@ -169,20 +160,22 @@ for hash_file in "$temp_dir"/hash_*; do
                     ;;
                 *) echo "  Keeping: $duplicate" ;;
             esac
+
         elif [ "$auto_delete" = true ]; then
             rm "$duplicate"
             echo "  Deleted: $duplicate"
+
         elif [ ! -z "$move_dir" ]; then
             mv "$duplicate" "$move_dir/"
             echo "  Moved to: $move_dir/$(basename "$duplicate")"
         fi
-        
-        duplicates_found=$((duplicates_found + 1))
+
+        duplicates_found=$((duplicates_found + 1))   # Count duplicates handled
     done
     echo ""
 done
 
-# Final report
+# Final summary report
 if [ $duplicates_found -eq 0 ]; then
     echo "No duplicate files found in $directory"
 else

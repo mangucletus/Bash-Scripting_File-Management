@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Bulk File Renamer
-# This script renames multiple files according to specified patterns
+# This script renames multiple files in a directory using different options like:
+# adding prefixes, suffixes, replacing text, numbering, and adding date stamps.
 
-# Function to display help information
+# Function to display help information for users
 show_help() {
     echo "Bulk File Renamer - A tool to rename multiple files at once"
     echo ""
@@ -26,7 +27,7 @@ show_help() {
     echo ""
 }
 
-# Initialize variables
+# Initialize default values for all options
 prefix=""
 suffix=""
 number_pattern=""
@@ -35,24 +36,25 @@ search=""
 replace=""
 directory=""
 
-# Parse command line arguments
+# Parse command-line options using getopts
+# Each case handles a different flag passed to the script
 while getopts "p:s:n:dr:h" opt; do
     case $opt in
-        p) prefix="$OPTARG" ;;
-        s) suffix="$OPTARG" ;;
-        n) number_pattern="$OPTARG" ;;
-        d) add_date=true ;;
-        r) search="$OPTARG"; replace="${@:OPTIND:1}"; OPTIND=$((OPTIND + 1)) ;;
-        h) show_help; exit 0 ;;
-        \?) echo "Invalid option: -$OPTARG" >&2; show_help; exit 1 ;;
+        p) prefix="$OPTARG" ;;                                   # -p: Set the prefix string
+        s) suffix="$OPTARG" ;;                                   # -s: Set the suffix string
+        n) number_pattern="$OPTARG" ;;                           # -n: Set the counter pattern
+        d) add_date=true ;;                                      # -d: Enable date prefix
+        r) search="$OPTARG"; replace="${@:OPTIND:1}"; OPTIND=$((OPTIND + 1)) ;;  # -r: Set search and replace terms
+        h) show_help; exit 0 ;;                                  # -h: Display help and exit
+        \?) echo "Invalid option: -$OPTARG" >&2; show_help; exit 1 ;; # Invalid flag handling
     esac
 done
 
-# Get directory from the remaining arguments
+# Remove parsed options, leaving the directory path
 shift $((OPTIND - 1))
 directory="$1"
 
-# Check if directory is provided and valid
+# Validate the directory path
 if [ -z "$directory" ]; then
     echo "Error: Directory not specified"
     show_help
@@ -64,118 +66,102 @@ if [ ! -d "$directory" ]; then
     exit 1
 fi
 
-# Function to rename files with a counter pattern
+# Function to rename files based on a numbering pattern
 rename_with_counter() {
     local dir="$1"
     local pattern="$2"
     local count=1
-    
-    # Get number of digits from pattern (count #'s)
+
+    # Count how many '#' symbols exist to determine digit width
     num_chars=$(echo "$pattern" | grep -o "#" | wc -l)
-    
-    # Replace # with format specifier for printf
+
+    # Convert each '#' to '%' for printf formatting (e.g., "file-%03d")
     printf_pattern="${pattern//'#'/%}"
-    
-    # For each file in the directory
+
+    # Iterate over files in the directory
     for file in "$dir"/*; do
-        # Skip if it's a directory
         if [ -d "$file" ]; then
-            continue
+            continue  # Skip directories
         fi
-        
-        # Get file extension and base name
+
         filename=$(basename "$file")
-        extension="${filename##*.}"
-        
-        # Format the counter according to the number of # characters
+        extension="${filename##*.}"  # Get the file extension
+
+        # Format the counter value with zero-padding
         formatted_count=$(printf "%0${num_chars}d" $count)
-        
-        # Apply the pattern with the counter
+
+        # Generate new filename with formatted counter
         new_name=$(printf "$printf_pattern" $formatted_count)
-        
-        # Add extension back
         new_name="$new_name.$extension"
-        
-        # Rename the file
-        mv "$file" "$dir/$new_name"
+
+        mv "$file" "$dir/$new_name"  # Rename the file
         echo "Renamed: $filename -> $new_name"
-        
-        # Increment counter
-        ((count++))
+
+        ((count++))  # Increment the counter
     done
 }
 
-# Function to apply prefix, suffix, and date to files
+# Function to apply prefix, suffix, and optional date to filenames
 rename_with_affixes() {
     local dir="$1"
     local prefix="$2"
     local suffix="$3"
     local add_date="$4"
-    
-    # Get current date in YYYY-MM-DD format
+
     current_date=""
     if [ "$add_date" = true ]; then
-        current_date=$(date +"%Y-%m-%d_")
+        current_date=$(date +"%Y-%m-%d_")  # Get today's date
     fi
-    
-    # For each file in the directory
+
     for file in "$dir"/*; do
-        # Skip if it's a directory
         if [ -d "$file" ]; then
-            continue
+            continue  # Skip directories
         fi
-        
-        # Get file name and extension
+
         filename=$(basename "$file")
-        extension="${filename##*.}"
-        basename="${filename%.*}"
-        
-        # Build new filename
+        extension="${filename##*.}"    # Extract extension
+        basename="${filename%.*}"      # Extract filename without extension
+
+        # Build new filename using affixes and optional date
         new_name="${current_date}${prefix}${basename}${suffix}.${extension}"
-        
-        # Rename the file
-        mv "$file" "$dir/$new_name"
+
+        mv "$file" "$dir/$new_name"  # Rename file
         echo "Renamed: $filename -> $new_name"
     done
 }
 
-# Function to replace text in filenames
+# Function to replace substrings in filenames
 rename_with_replace() {
     local dir="$1"
     local search="$2"
     local replace="$3"
-    
-    # For each file in the directory
+
     for file in "$dir"/*; do
-        # Skip if it's a directory
         if [ -d "$file" ]; then
-            continue
+            continue  # Skip directories
         fi
-        
-        # Get filename
+
         filename=$(basename "$file")
-        
-        # Replace text in filename
-        new_name="${filename//$search/$replace}"
-        
-        # Only rename if there's a change
+        new_name="${filename//$search/$replace}"  # Replace all instances
+
         if [ "$filename" != "$new_name" ]; then
-            mv "$file" "$dir/$new_name"
+            mv "$file" "$dir/$new_name"  # Rename only if a change occurs
             echo "Renamed: $filename -> $new_name"
         fi
     done
 }
 
-# Perform the renaming based on provided options
+# Begin the renaming process
 echo "Starting file renaming in: $directory"
 
-# Counter-based renaming takes precedence
+# Apply renaming logic based on user input priority:
+# 1. Number pattern (overrides all others)
+# 2. Text replacement
+# 3. Prefix, suffix, and/or date
 if [ ! -z "$number_pattern" ]; then
     rename_with_counter "$directory" "$number_pattern"
-# Text replacement
 elif [ ! -z "$search" ]; then
     rename_with_replace "$directory" "$search" "$replace"
-# Affixes (prefix, suffix, date)
 else
     rename_with_affixes "$directory" "$prefix" "$suffix" "$add_date"
 fi

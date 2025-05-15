@@ -1,35 +1,38 @@
 #!/bin/bash
 
 # File Sync Utility
-# This script synchronizes files between two folders with two-way sync capability
+# This script synchronizes files between two folders with two-way sync capability.
+# It compares modification times and file checksums to determine sync direction.
 # Usage: ./file_sync.sh [source_folder] [destination_folder] [options]
 
-# Constants for log levels
+# Constants to represent log levels for easier log formatting and filtering
 INFO="INFO"
 WARNING="WARNING"
 ERROR="ERROR"
 
-# Log file path
+# Path to the log file where sync actions and errors will be recorded
 LOG_FILE="file_sync.log"
 
-# Function to log messages
+# Function to log messages to both the log file and the console with color coding
 log_message() {
-    local level=$1
-    local message=$2
-    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    local level=$1      # Log level: INFO, WARNING, or ERROR
+    local message=$2    # Message content
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")  # Current timestamp
+
+    # Append log entry to the log file
     echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
-    
-    # Also print to console
+
+    # Display log message in the terminal with optional color formatting
     if [[ "$level" == "$ERROR" ]]; then
-        echo -e "\e[31m[$level] $message\e[0m"  # Red color for errors
+        echo -e "\e[31m[$level] $message\e[0m"  # Red for errors
     elif [[ "$level" == "$WARNING" ]]; then
-        echo -e "\e[33m[$level] $message\e[0m"  # Yellow color for warnings
+        echo -e "\e[33m[$level] $message\e[0m"  # Yellow for warnings
     else
-        echo "[$level] $message"
+        echo "[$level] $message"               # Default for info
     fi
 }
 
-# Function to show help
+# Function to display usage information
 show_help() {
     echo "File Sync Utility"
     echo "Usage: ./file_sync.sh [source_folder] [destination_folder] [options]"
@@ -44,128 +47,108 @@ show_help() {
     echo "  ./file_sync.sh ~/Documents/folder1 ~/Documents/folder2 --dry-run"
 }
 
-# Function to check if a file exists
+# Utility function to check whether a given file path exists
 file_exists() {
     local file_path=$1
     if [ -f "$file_path" ]; then
-        return 0  # True
+        return 0  # File exists
     else
-        return 1  # False
+        return 1  # File does not exist
     fi
 }
 
-# Function to get file modification time in seconds since epoch
+# Function to get the last modification time of a file in seconds since epoch
 get_mod_time() {
     local file_path=$1
     if file_exists "$file_path"; then
+        # Use stat command for Linux or macOS compatibility
         stat -c %Y "$file_path" 2>/dev/null || stat -f %m "$file_path" 2>/dev/null
     else
-        echo "0"  # Return 0 if file doesn't exist
+        echo "0"  # Return 0 if file does not exist
     fi
 }
 
-# Function to compare files based on modification time
-# Returns: 
-#   0 - Files are identical or don't need sync
-#   1 - Source is newer
-#   2 - Destination is newer
-#   3 - Both have changes (conflict)
+# Function to compare two files and decide the sync action
+# Returns:
+#   0 = Files are identical
+#   1 = Source is newer
+#   2 = Destination is newer
+#   3 = Conflict detected (both changed)
 compare_files() {
     local source_file=$1
     local dest_file=$2
-    
-    # Check if both files exist
+
     local source_exists=0
     local dest_exists=0
-    
+
     file_exists "$source_file" && source_exists=1
     file_exists "$dest_file" && dest_exists=1
-    
-    # If neither file exists, no action needed
+
     if [ $source_exists -eq 0 ] && [ $dest_exists -eq 0 ]; then
-        return 0
+        return 0  # No files to compare
+    elif [ $source_exists -eq 1 ] && [ $dest_exists -eq 0 ]; then
+        return 1  # Only source exists, needs to copy to destination
+    elif [ $source_exists -eq 0 ] && [ $dest_exists -eq 1 ]; then
+        return 2  # Only destination exists, needs to copy to source
     fi
-    
-    # If only source exists, copy to destination
-    if [ $source_exists -eq 1 ] && [ $dest_exists -eq 0 ]; then
-        return 1
-    fi
-    
-    # If only destination exists, copy to source
-    if [ $source_exists -eq 0 ] && [ $dest_exists -eq 1 ]; then
-        return 2
-    fi
-    
-    # Both files exist, compare modification times
-    local source_time=$(get_mod_time "$source_file")
-    local dest_time=$(get_mod_time "$dest_file")
-    
-    # Check if files are identical using checksum
+
+    # Both files exist, compare contents using checksums
     if [ "$(md5sum "$source_file" | cut -d ' ' -f 1)" == "$(md5sum "$dest_file" | cut -d ' ' -f 1)" ]; then
         return 0  # Files are identical
     fi
-    
-    # Check for conflict (both files modified since last sync)
-    # For simplicity, we'll detect conflicts based on modification times
-    # In a real-world scenario, you might want to store the last sync time
-    
-    # If source is newer
+
+    # Compare modification times if checksums differ
+    local source_time=$(get_mod_time "$source_file")
+    local dest_time=$(get_mod_time "$dest_file")
+
     if [ $source_time -gt $dest_time ]; then
-        return 1
-    # If destination is newer
+        return 1  # Source is newer
     elif [ $dest_time -gt $source_time ]; then
-        return 2
-    # If modification times are the same but content differs (rare case)
+        return 2  # Destination is newer
     else
-        return 3  # Conflict
+        return 3  # Conflict: same timestamp but different content
     fi
 }
 
-# Function to copy a file
+# Function to copy a file from source to destination or vice versa
 copy_file() {
     local source=$1
     local destination=$2
-    local direction=$3  # "to_dest" or "to_source"
-    
-    # Create destination directory if it doesn't exist
-    mkdir -p "$(dirname "$destination")"
-    
-    # Copy the file
-    cp -p "$source" "$destination"
-    
+    local direction=$3  # Used for logging: "to_dest" or "to_source"
+
+    mkdir -p "$(dirname "$destination")"  # Ensure destination directory exists
+    cp -p "$source" "$destination"        # Copy file with permissions and timestamp
+
     if [ $? -eq 0 ]; then
         if [ "$direction" == "to_dest" ]; then
             log_message "$INFO" "Copied file to destination: $destination"
         else
             log_message "$INFO" "Copied file to source: $destination"
         fi
-        return 0
     else
         log_message "$ERROR" "Failed to copy: $source -> $destination"
-        return 1
     fi
 }
 
-# Function to handle file conflicts
+# Function to handle conflicts when both files have changed
 handle_conflict() {
     local source_file=$1
     local dest_file=$2
-    
+
     if [ "$FORCE_MODE" == "true" ]; then
-        # In force mode, source wins
+        # Automatically resolve by copying source to destination
         log_message "$WARNING" "Conflict resolved (force mode, source wins): $source_file"
         copy_file "$source_file" "$dest_file" "to_dest"
         return
     fi
-    
-    # Create backup of destination file
+
+    # Create a backup before resolving conflict
     local backup_file="${dest_file}.backup.$(date +%s)"
     cp "$dest_file" "$backup_file"
-    
     log_message "$WARNING" "Conflict detected: $source_file and $dest_file"
     log_message "$INFO" "Created backup: $backup_file"
-    
-    # Ask user for resolution if not in dry run mode
+
+    # Prompt user to choose resolution if not a dry run
     if [ "$DRY_RUN" != "true" ]; then
         echo ""
         echo "Conflict detected between:"
@@ -176,95 +159,72 @@ handle_conflict() {
         echo "  1) Keep source version (copy to destination)"
         echo "  2) Keep destination version (copy to source)"
         echo "  3) Skip this file"
-        echo ""
         read -p "Enter choice [1-3]: " choice
-        
+
         case $choice in
-            1)
-                copy_file "$source_file" "$dest_file" "to_dest"
-                ;;
-            2)
-                copy_file "$dest_file" "$source_file" "to_source"
-                ;;
-            3)
-                log_message "$INFO" "Skipped conflicted file: $source_file"
-                ;;
-            *)
-                log_message "$WARNING" "Invalid choice, skipping file: $source_file"
-                ;;
+            1) copy_file "$source_file" "$dest_file" "to_dest" ;;
+            2) copy_file "$dest_file" "$source_file" "to_source" ;;
+            3) log_message "$INFO" "Skipped conflicted file: $source_file" ;;
+            *) log_message "$WARNING" "Invalid choice, skipping file: $source_file" ;;
         esac
     else
         log_message "$INFO" "Dry run: Conflict would require manual resolution: $source_file"
     fi
 }
 
-# Function to synchronize files
+# Core function to synchronize files between source and destination directories
 sync_files() {
     local source_dir=$1
     local dest_dir=$2
-    
-    # Make sure directories end with a slash
+
+    # Normalize paths to ensure trailing slash
     [[ "$source_dir" != */ ]] && source_dir="$source_dir/"
     [[ "$dest_dir" != */ ]] && dest_dir="$dest_dir/"
-    
+
     log_message "$INFO" "Starting sync from $source_dir to $dest_dir"
-    
-    # Get a list of all files in source directory
+
+    # Step 1: Sync files from source to destination
     find "$source_dir" -type f -not -path "*/\.*" | while read source_file; do
-        # Get the relative file path
-        local rel_path="${source_file#$source_dir}"
-        local dest_file="$dest_dir$rel_path"
-        
-        # Compare files
-        compare_files "$source_file" "$dest_file"
+        local rel_path="${source_file#$source_dir}"          # Relative path
+        local dest_file="$dest_dir$rel_path"                 # Destination file path
+
+        compare_files "$source_file" "$dest_file"            # Determine sync action
         local comparison_result=$?
-        
+
         case $comparison_result in
-            0) # Files are identical or don't need sync
-                log_message "$INFO" "No sync needed: $rel_path"
+            0) log_message "$INFO" "No sync needed: $rel_path" ;;
+            1)
+                [ "$DRY_RUN" == "true" ] \
+                    && log_message "$INFO" "Dry run: Would copy to destination: $rel_path" \
+                    || copy_file "$source_file" "$dest_file" "to_dest"
                 ;;
-            1) # Source is newer
-                if [ "$DRY_RUN" == "true" ]; then
-                    log_message "$INFO" "Dry run: Would copy to destination: $rel_path"
-                else
-                    copy_file "$source_file" "$dest_file" "to_dest"
-                fi
+            2)
+                [ "$DRY_RUN" == "true" ] \
+                    && log_message "$INFO" "Dry run: Would copy to source: $rel_path" \
+                    || copy_file "$dest_file" "$source_file" "to_source"
                 ;;
-            2) # Destination is newer
-                if [ "$DRY_RUN" == "true" ]; then
-                    log_message "$INFO" "Dry run: Would copy to source: $rel_path"
-                else
-                    copy_file "$dest_file" "$source_file" "to_source"
-                fi
-                ;;
-            3) # Conflict
-                handle_conflict "$source_file" "$dest_file"
-                ;;
+            3) handle_conflict "$source_file" "$dest_file" ;;
         esac
     done
-    
-    # Check for files only in destination
+
+    # Step 2: Sync files that exist only in the destination
     find "$dest_dir" -type f -not -path "*/\.*" | while read dest_file; do
-        # Get the relative file path
         local rel_path="${dest_file#$dest_dir}"
         local source_file="$source_dir$rel_path"
-        
-        # Check if the file exists in source
+
         if ! file_exists "$source_file"; then
-            if [ "$DRY_RUN" == "true" ]; then
-                log_message "$INFO" "Dry run: Would copy to source: $rel_path"
-            else
-                copy_file "$dest_file" "$source_file" "to_source"
-            fi
+            [ "$DRY_RUN" == "true" ] \
+                && log_message "$INFO" "Dry run: Would copy to source: $rel_path" \
+                || copy_file "$dest_file" "$source_file" "to_source"
         fi
     done
-    
+
     log_message "$INFO" "Sync completed between $source_dir and $dest_dir"
 }
 
-# Main script execution
+# Main Script Execution Starts Here
 
-# Initialize variables
+# Initialize global flags
 SOURCE_DIR=""
 DEST_DIR=""
 DRY_RUN="false"
@@ -273,18 +233,9 @@ FORCE_MODE="false"
 # Process command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --help)
-            show_help
-            exit 0
-            ;;
-        --dry-run)
-            DRY_RUN="true"
-            shift
-            ;;
-        --force)
-            FORCE_MODE="true"
-            shift
-            ;;
+        --help) show_help; exit 0 ;;
+        --dry-run) DRY_RUN="true"; shift ;;
+        --force) FORCE_MODE="true"; shift ;;
         *)
             if [ -z "$SOURCE_DIR" ]; then
                 SOURCE_DIR="$1"
@@ -300,19 +251,20 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate source and destination directories
+# Validate input
 if [ -z "$SOURCE_DIR" ] || [ -z "$DEST_DIR" ]; then
     log_message "$ERROR" "Source and destination directories are required"
     show_help
     exit 1
 fi
 
-# Check if directories exist
+# Check if source directory exists
 if [ ! -d "$SOURCE_DIR" ]; then
     log_message "$ERROR" "Source directory does not exist: $SOURCE_DIR"
     exit 1
 fi
 
+# Create destination directory if missing
 if [ ! -d "$DEST_DIR" ]; then
     log_message "$INFO" "Destination directory does not exist. Creating: $DEST_DIR"
     mkdir -p "$DEST_DIR"
@@ -322,16 +274,11 @@ if [ ! -d "$DEST_DIR" ]; then
     fi
 fi
 
-# Print sync mode
-if [ "$DRY_RUN" == "true" ]; then
-    log_message "$INFO" "Running in DRY RUN mode - no changes will be made"
-fi
+# Inform user about modes
+[ "$DRY_RUN" == "true" ] && log_message "$INFO" "Running in DRY RUN mode - no changes will be made"
+[ "$FORCE_MODE" == "true" ] && log_message "$INFO" "Running in FORCE mode - conflicts will be resolved automatically"
 
-if [ "$FORCE_MODE" == "true" ]; then
-    log_message "$INFO" "Running in FORCE mode - conflicts will be resolved automatically"
-fi
-
-# Start synchronization
+# Begin synchronization process
 sync_files "$SOURCE_DIR" "$DEST_DIR"
 
 exit 0
