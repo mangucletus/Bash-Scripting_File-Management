@@ -1,0 +1,23 @@
+[2025-05-16 08:25:49] [INFO] Running in DRY RUN mode - no changes will be made
+[2025-05-16 08:25:49] [INFO] Starting sync from test/source/ to test/destination/
+[2025-05-16 08:25:49] [INFO] Dry run: Would copy to destination: fileA.txt
+[2025-05-16 08:25:49] [INFO] Dry run: Would copy to source: fileB.txt
+[2025-05-16 08:25:49] [INFO] Sync completed between test/source/ and test/destination/
+[2025-05-16 08:26:08] [INFO] Starting sync from test/source/ to test/destination/
+[2025-05-16 08:26:08] [INFO] Copied file to destination: test/destination/fileA.txt
+[2025-05-16 08:26:08] [INFO] Copied file to source: test/source/fileB.txt
+[2025-05-16 08:26:08] [INFO] Sync completed between test/source/ and test/destination/
+[2025-05-16 08:26:24] [INFO] Starting sync from test/source/ to test/destination/
+[2025-05-16 08:26:24] [INFO] No sync needed: fileB.txt
+[2025-05-16 08:26:24] [WARNING] Conflict detected: test/source/fileA.txt and test/destination/fileA.txt
+[2025-05-16 08:26:24] [INFO] Created backup: test/destination/fileA.txt.backup.1747383984
+[2025-05-16 08:26:24] [WARNING] Invalid choice, skipping file: test/source/fileA.txt
+[2025-05-16 08:26:24] [INFO] Copied file to source: test/source/fileA.txt.backup.1747383984
+[2025-05-16 08:26:24] [INFO] Sync completed between test/source/ and test/destination/
+[2025-05-16 08:26:50] [INFO] Running in FORCE mode - conflicts will be resolved automatically
+[2025-05-16 08:26:50] [INFO] Starting sync from test/source/ to test/destination/
+[2025-05-16 08:26:50] [INFO] No sync needed: fileA.txt.backup.1747383984
+[2025-05-16 08:26:50] [INFO] No sync needed: fileB.txt
+[2025-05-16 08:26:50] [WARNING] Conflict resolved (force mode, source wins): test/source/fileA.txt
+[2025-05-16 08:26:50] [INFO] Copied file to destination: test/destination/fileA.txt
+[2025-05-16 08:26:50] [INFO] Sync completed between test/source/ and test/destination/
