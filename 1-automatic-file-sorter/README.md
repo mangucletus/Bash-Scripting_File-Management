@@ -1,6 +1,6 @@
 # Automatic File Sorter
 
-A robust and efficient bash script that automatically organizes files in a directory based on their file extensions, creating a structured and manageable file system.
+An efficient bash script that automatically organizes files in a directory based on their file extensions, creating a structured and manageable file system.
 
 ## Table of Contents
 
@@ -84,7 +84,7 @@ The script follows a linear execution model with the following phases:
 
 ```bash
 # Download the script (replace with actual URL)
-curl -O https://raw.githubusercontent.com/mangucletus/1-automatic-file-sorter/main/automatic_file_sorter.sh
+curl -O https://github.com/mangucletus/Bash-Scripting_File-Management/blob/main/1-automatic-file-sorter/automatic_file_sorter.sh
 
 # Make it executable
 chmod +x automatic_file_sorter.sh
@@ -103,8 +103,8 @@ git clone https://github.com/mangucletus/Bash-Scripting_File-Management.git
 cd Bash-Scripting_File-Management 
 # Navigate to sub-folder where the script is located
 cd 1-autmatic-file-sorter
-# See the content of the sub-folder, automatic-file-sorter.sh should be listed
-ls 
+# See the content of the sub-folder, automatic-file-sorter.sh should be listed with the permission
+ls -la
 
 # Make script executable
 chmod +x automatic_file_sorter.sh

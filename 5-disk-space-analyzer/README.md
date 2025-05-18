@@ -1,6 +1,6 @@
 # Disk Space Analyzer
 
-A robust Bash script that analyzes disk usage and displays results in a tree-like structure, helping you quickly identify large folders and files.
+This Bash script analyzes disk usage and displays results in a tree-like structure, helping you quickly identify large folders and files.
 
 ---
 
@@ -128,7 +128,7 @@ Displaying up to 10 items per directory.
 
 ---
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -187,6 +187,8 @@ Below are screenshots showing the script in action:
 **2. Tree Structure with Files Included**
 
 ![Test 2](./images/test2.png)
+
+![Test 2](./images/test3.png)
 
 ---
 

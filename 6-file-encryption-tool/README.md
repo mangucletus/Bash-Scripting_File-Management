@@ -1,6 +1,6 @@
-# File Encryption Tool Documentation
+# File Encryption Tool 
 
-A robust Bash script for secure file encryption and decryption using OpenSSL's AES-256-CBC cipher, PBKDF2 key derivation, and strong password-based protection.
+A Bash script for secure file encryption and decryption using OpenSSL's AES-256-CBC cipher, PBKDF2 key derivation, and strong password-based protection.
 
 ---
 
@@ -41,10 +41,10 @@ This documentation covers a Bash script for encrypting and decrypting files usin
 
 ## Installation
 
-1. Download the `file_encryption.sh` script to your computer.
+1. CLone the project or Download the `file_encryption_tool.sh` script to your computer.
 2. Make it executable:
    ```bash
-   chmod +x file_encryption.sh
+   chmod +x file_encryption_tool.sh
    ```
 3. (Optional) Move it to a directory in your `$PATH` for global access.
 
@@ -68,7 +68,7 @@ This documentation covers a Bash script for encrypting and decrypting files usin
 ### Command Syntax
 
 ```bash
-./file_encryption.sh [encrypt|decrypt] [input_file] [output_file]
+./file_encryption_tool.sh [encrypt|decrypt] [input_file] [output_file]
 ```
 
 - `encrypt`: Encrypts the input file and writes the result to the output file.
@@ -88,14 +88,14 @@ This documentation covers a Bash script for encrypting and decrypting files usin
 
 **Encrypt a file:**
 ```bash
-./file_encryption.sh encrypt secret.txt secret.enc
+./file_encryption_tool.sh encrypt secret.txt secret.enc
 ```
 - Prompts for a password (twice for confirmation).
 - Produces `secret.enc` as the encrypted output.
 
 **Decrypt a file:**
 ```bash
-./file_encryption.sh decrypt secret.enc secret_decrypted.txt
+./file_encryption_tool.sh decrypt secret.enc secret_decrypted.txt
 ```
 - Prompts for the password.
 - Produces `secret_decrypted.txt` if the password is correct.
@@ -184,17 +184,14 @@ This documentation covers a Bash script for encrypting and decrypting files usin
 
 ---
 
-## Demo Screenshots
+## Demo Screenshot
 
-Below are screenshots showing the script in action:
+Below is a screenshot showing the script in action:
 
 **1. Encryption Prompt and Output**
 
-![Test 1](./images/test1.png)
+![Test 1](./images/test.png)
 
-**2. Decryption Prompt and Output**
-
-![Test 2](./images/test2.png)
 
 ---
 

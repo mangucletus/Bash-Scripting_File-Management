@@ -1,8 +1,8 @@
-# File Sync Utility Documentation
+# File Sync Utility 
 
 ## Overview
 
-The **File Sync Utility** is a robust Bash script for **bidirectional (two-way) synchronization** of files between two directories. It ensures both folders reflect the latest changes, propagates updates in both directions, and handles conflicts with backup and user intervention. The script is designed for reliability, transparency, and safety, with detailed logging, dry-run, and force modes.
+The **File Sync Utility** is a detailed Bash script for **bidirectional (two-way) synchronization** of files between two directories. It ensures both folders reflect the latest changes, propagates updates in both directions, and handles conflicts with backup and user intervention. The script is designed for reliability, transparency, and safety, with detailed logging, dry-run, and force modes.
 
 ---
 
@@ -30,10 +30,10 @@ The **File Sync Utility** is a robust Bash script for **bidirectional (two-way) 
 
 ## Installation
 
-1. Download the `file_sync.sh` script to your computer.
+1. Download the `file_sync_utility.sh` script to your computer.
 2. Make it executable:
    ```bash
-   chmod +x file_sync.sh
+   chmod +x file_sync_utility.sh
    ```
 3. (Optional) Move it to a directory in your `$PATH` for global access.
 
@@ -44,7 +44,7 @@ The **File Sync Utility** is a robust Bash script for **bidirectional (two-way) 
 ### Basic Command Structure
 
 ```bash
-./file_sync.sh [source_folder] [destination_folder] [options]
+./file_sync_utility.sh [source_folder] [destination_folder] [options]
 ```
 
 ### Available Options
@@ -59,17 +59,17 @@ The **File Sync Utility** is a robust Bash script for **bidirectional (two-way) 
 
 **Basic synchronization:**
 ```bash
-./file_sync.sh ~/Documents/folder1 ~/Documents/folder2
+./file_sync_utility.sh ~/Documents/folder1 ~/Documents/folder2
 ```
 
 **Preview changes without modifying files:**
 ```bash
-./file_sync.sh ~/Documents/folder1 ~/Documents/folder2 --dry-run
+./file_sync_utility.sh ~/Documents/folder1 ~/Documents/folder2 --dry-run
 ```
 
 **Force synchronization (auto-resolve conflicts):**
 ```bash
-./file_sync.sh ~/Documents/folder1 ~/Documents/folder2 --force
+./file_sync_utility.sh ~/Documents/folder1 ~/Documents/folder2 --force
 ```
 
 ---
@@ -98,7 +98,7 @@ The **File Sync Utility** is a robust Bash script for **bidirectional (two-way) 
 
 #### 1. Logging
 
-- **log_message(level, message)**: Logs messages to both the console and a log file (`file_sync.log`). Uses color coding for error and warning messages. Each log entry includes a timestamp and severity (`INFO`, `WARNING`, `ERROR`).
+- **log_message(level, message)**: Logs messages to both the console and a log file (`file_sync_utility.log`). Uses color coding for error and warning messages. Each log entry includes a timestamp and severity (`INFO`, `WARNING`, `ERROR`).
 
 #### 2. File Existence and Metadata
 
@@ -195,7 +195,7 @@ When a conflict is detected (both files modified since last sync):
 
 ## Logging
 
-All actions are logged to both the console and a log file (`file_sync.log`) with timestamps and severity levels:
+All actions are logged to both the console and a log file (`file_sync_utility.log`) with timestamps and severity levels:
 
 - `INFO`: Normal operations
 - `WARNING`: Potential issues that were handled
@@ -219,6 +219,8 @@ Below are screenshots showing the script in action:
 **2. Conflict Resolution Prompt**
 
 ![Test 2](./images/test2.png)
+
+![Test 2](./images/test3.png)
 
 ---
 
@@ -251,7 +253,7 @@ Each error is logged with details to help diagnose the issue.
 2. **Regular Syncs**: Frequent synchronization reduces the chance of conflicts.
 3. **Backup First**: Before first sync, consider backing up both directories.
 4. **Avoid Syncing System Files**: Don't use this utility for system directories.
-5. **Check Logs**: Review the `file_sync.log` file after each run.
+5. **Check Logs**: Review the `file_sync_utility.log` file after each run.
 
 ---
 
@@ -263,7 +265,7 @@ You can set up a cron job to run the sync at regular intervals:
 
 ```bash
 # Run sync every hour
-0 * * * * /path/to/file_sync.sh /path/to/source /path/to/destination --force >> /path/to/cron.log 2>&1
+0 * * * * /path/to/file_sync_utility.sh /path/to/source /path/to/destination --force >> /path/to/cron.log 2>&1
 ```
 
 ### One-way Sync Alternative

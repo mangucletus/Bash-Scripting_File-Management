@@ -41,7 +41,7 @@ Ideal for organizing large collections of files such as photos, documents, or da
 
 ## Installation
 
-1. Download the script as `bulk_file_renamer.sh`.
+1. Clone the project or Download the script as `bulk_file_renamer.sh`.
 2. Make it executable:
 
    ```bash
@@ -221,7 +221,7 @@ The script always preserves file extensions, even as it modifies the filename po
 
 ## Flow Diagram
 
-### Skeleton Flow
+### Skeleton Flowchart
 
 ```
 START

@@ -1,6 +1,6 @@
 # Duplicate File Finder
 
-A robust Bash script to efficiently identify and manage duplicate files in a directory, with interactive and automated options for handling duplicates.
+This Bash script efficiently identifies and manages duplicate files in a directory, with interactive and automated options for handling duplicates.
 
 ---
 
@@ -105,18 +105,18 @@ END
 
 ### 1. Download the Script
 
-Save the script as `duplicate_finder.sh`.
+Save the script as `duplicate_file_finder.sh`.
 
 ### 2. Make it Executable
 
 ```bash
-chmod +x duplicate_finder.sh
+chmod +x duplicate_file_finder.sh
 ```
 
 ### 3. Run the Script
 
 ```bash
-./duplicate_finder.sh [OPTIONS] /path/to/directory
+./duplicate_file_finder.sh [OPTIONS] /path/to/directory
 ```
 
 ---
@@ -138,28 +138,28 @@ chmod +x duplicate_finder.sh
 ### Basic scan (report only)
 
 ```bash
-./duplicate_finder.sh ~/Documents
+./duplicate_file_finder.sh ~/Documents
 ```
 *Scans the Documents folder and reports duplicates, but takes no action.*
 
 ### Interactive mode with recursive scanning
 
 ```bash
-./duplicate_finder.sh -r -i ~/Pictures
+./duplicate_file_finder.sh -r -i ~/Pictures
 ```
 *Scans Pictures and subdirectories, prompting for each duplicate.*
 
 ### Auto-delete duplicates
 
 ```bash
-./duplicate_finder.sh -d ~/Downloads
+./duplicate_file_finder.sh -d ~/Downloads
 ```
 *Deletes all duplicates in Downloads, keeping the first occurrence.*
 
 ### Move duplicates to another folder
 
 ```bash
-./duplicate_finder.sh -m ~/Duplicates ~/Music
+./duplicate_file_finder.sh -m ~/Duplicates ~/Music
 ```
 *Moves duplicates from Music to the Duplicates folder.*
 

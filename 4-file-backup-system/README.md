@@ -1,6 +1,6 @@
 # File Backup System
 
-A flexible and robust Bash script for backing up important files and directories, supporting full, incremental, and differential backups with advanced options for compression, logging, exclusion, and timestamping.
+A flexible Bash script for backing up important files and directories, supporting full, incremental, and differential backups with advanced options for compression, logging, exclusion, and timestamping.
 
 ---
 
@@ -142,7 +142,7 @@ Copies **files modified within a specified number of days** (e.g., last 7 days).
 
 ---
 
-## Flow Diagram
+## Skeleton Flow Diagram
 
 ```
 START
@@ -195,13 +195,21 @@ END
 
 Below are screenshots showing the script in action:
 
-**1. Backup Operation Output**
+**1. Default Backup**
 
-![Test 1](./images/test1.png)
+![Test 1](./images/test1-default-backup.png)
 
-**2. Log File Example**
+**2. Full Backup**
 
-![Test 2](./images/test2.png)
+![Test 2](./images/test2-fullbackup-with-logging-and-timestamp.png)
+
+**3. Incremental Backup**
+
+![Test 3](./images/test3-increamental-backup.png)
+
+**4. Differential Backup and Compression**
+
+![Test 4](./images/test4-differential-backup-and-compression.png)
 
 ---
 
@@ -310,8 +318,3 @@ Pull requests and suggestions are welcome! Please open an issue for bugs or feat
 
 ---
 
-## License
-
-This script is provided as-is, without warranty. Use at your own risk.
-
----
