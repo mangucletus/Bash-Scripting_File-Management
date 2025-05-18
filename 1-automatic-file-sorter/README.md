@@ -1,10 +1,5 @@
 # Automatic File Sorter
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Shell Script](https://img.shields.io/badge/Language-Bash-green.svg)](https://www.gnu.org/software/bash/)
-[![Version](https://img.shields.io/badge/Version-1.0-blue.svg)](https://github.com/mangucletus/Bash-Scripting_File-Management
-/1-automatic-file-sorter/1-automatic-file-sorter)
-
 A robust and efficient bash script that automatically organizes files in a directory based on their file extensions, creating a structured and manageable file system.
 
 ## Table of Contents

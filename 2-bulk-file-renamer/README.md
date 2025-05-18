@@ -1,47 +1,92 @@
 # Bulk File Renamer
 
-A flexible bash script for renaming multiple files using various patterns and rules.
+A flexible, extensible Bash script to batch rename files in a directory using powerful options—prefixes, suffixes, numbering, date stamps, and search/replace functionality.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage Guide](#usage-guide)
+- [Command Line Options](#command-line-options)
+- [Examples & Demos](#examples--demos)
+- [How the Script Works (Technical Explanation)](#how-the-script-works-technical-explanation)
+- [Flow Diagram](#flow-diagram)
+- [Limitations](#limitations)
+- [Future Improvements](#future-improvements)
+
+---
 
 ## Overview
 
-The Bulk File Renamer is a bash script that helps you rename multiple files at once using prefixes, suffixes, counters, dates, or search-and-replace patterns.
+Bulk File Renamer is a command-line tool designed to automate the renaming of multiple files in a target directory. It supports a variety of renaming operations, such as adding/removing prefixes and suffixes, sequential numbering, applying date stamps, and performing text substitutions within filenames.
+
+Ideal for organizing large collections of files such as photos, documents, or datasets.
+
+---
 
 ## Features
 
-- Add prefixes to filenames
-- Add suffixes to filenames (preserving extensions)
-- Number files sequentially using customizable patterns
-- Add date prefixes in YYYY-MM-DD format
-- Replace specific text in filenames
-- Combine multiple renaming options
-- Preserves file extensions
+- **Add Prefixes** — Insert text at the start of each filename
+- **Add Suffixes** — Insert text before the file extension
+- **Add Date Stamp** — Prepend the current date (YYYY-MM-DD_)
+- **Sequential Numbering** — Rename files with customizable, zero-padded counters (e.g., `photo-001`, `photo-002`)
+- **Search and Replace** — Replace substrings in filenames
+- **Flexible Combination** — Combine options for advanced renaming tasks
+- **Preserves Extensions** — File extensions are never lost or mangled
 
-## How to Use
+---
 
-1. Make the script executable:
-   ```
-   chmod +x bulk_renamer.sh
+## Installation
+
+1. Download the script as `bulk_file_renamer.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x bulk_file_renamer.sh
    ```
 
-2. Run the script with the desired options:
-   ```
-   ./bulk_renamer.sh [OPTIONS] <directory>
-   ```
+---
+
+## Usage Guide
+
+Run the script from the command line, specifying one or more options and the target directory:
+
+```bash
+./bulk_file_renamer.sh [OPTIONS] <directory>
+```
+
+- `<directory>`: The path to the folder whose files you wish to rename.
+- **Options**: Choose one or more of the flags described below.
+
+To see built-in help:
+
+```bash
+./bulk_file_renamer.sh -h
+```
+
+---
 
 ## Command Line Options
 
 | Option | Format | Description | Example |
 |--------|--------|-------------|---------|
-| `-p` | `-p PREFIX` | Add prefix to filenames | `-p "vacation_"` |
-| `-s` | `-s SUFFIX` | Add suffix before extension | `-s "_edited"` |
-| `-n` | `-n PATTERN` | Rename using pattern with counter | `-n "photo-###"` |
-| `-d` | `-d` | Add date prefix (YYYY-MM-DD_) | `-d` |
-| `-r` | `-r SEARCH REPLACE` | Replace text in filenames | `-r " " "_"` |
-| `-h` | `-h` | Show help message | `-h` |
+| `-p`   | `-p PREFIX` | Add a prefix to filenames | `-p "vacation_"` |
+| `-s`   | `-s SUFFIX` | Add a suffix before the file extension | `-s "_edited"` |
+| `-n`   | `-n PATTERN` | Rename files using a pattern with counter (`#` as placeholder) | `-n "photo-###"` |
+| `-d`   | `-d` | Add date prefix (YYYY-MM-DD_) | `-d` |
+| `-r`   | `-r SEARCH REPLACE` | Replace SEARCH with REPLACE in filenames | `-r " " "_"` |
+| `-h`   | `-h` | Show help message and exit | `-h` |
 
-## Demo | Example
+> ℹ️ **Note:** The script only processes files in the specified directory, not subdirectories.
 
-### Adding a prefix to all files
+---
+
+## Examples & Demos
+
+### 1. Add a Prefix
 
 ```bash
 ./bulk_renamer.sh -p "vacation_" ~/Pictures
@@ -53,7 +98,6 @@ beach.jpg
 mountain.jpg
 sunset.jpg
 ```
-
 After:
 ```
 vacation_beach.jpg
@@ -61,7 +105,9 @@ vacation_mountain.jpg
 vacation_sunset.jpg
 ```
 
-### Adding a suffix and date to filenames
+---
+
+### 2. Add a Suffix and Date
 
 ```bash
 ./bulk_renamer.sh -s "_edited" -d ~/Documents
@@ -72,14 +118,15 @@ Before:
 report.docx
 notes.txt
 ```
-
 After:
 ```
 2025-05-14_report_edited.docx
 2025-05-14_notes_edited.txt
 ```
 
-### Numbering files sequentially
+---
+
+### 3. Number Files Sequentially
 
 ```bash
 ./bulk_renamer.sh -n "photo-###" ~/Pictures
@@ -91,7 +138,6 @@ IMG_1234.jpg
 DSC_5678.jpg
 DCIM_9012.jpg
 ```
-
 After:
 ```
 photo-001.jpg
@@ -99,10 +145,12 @@ photo-002.jpg
 photo-003.jpg
 ```
 
-### Replacing spaces with underscores
+---
+
+### 4. Replace Spaces with Underscores
 
 ```bash
-./bulk_renamer.sh -r " " "_" ~/Documents
+./bulk_file_renamer.sh -r " " "_" ~/Documents
 ```
 
 Before:
@@ -110,14 +158,70 @@ Before:
 my document.docx
 meeting notes.txt
 ```
-
 After:
 ```
 my_document.docx
 meeting_notes.txt
 ```
 
-## Skeleton Flow Diagram
+---
+
+### Visual Demo
+
+#### Example: Numbering and Renaming (Before and After)
+
+![Test 1 - Before Renaming](./images/test1.png)
+*Original files before applying the script.*
+
+![Test 2 - After Renaming](./images/test2.png)
+*Files after renaming with sequential numbering pattern.*
+
+---
+
+## How the Script Works (Technical Explanation)
+
+**1. Command-Line Parsing**
+
+The script uses `getopts` to parse options:
+
+- `-p`: Sets a prefix to prepend to all filenames
+- `-s`: Sets a suffix to add before file extensions
+- `-n`: Specifies a pattern for sequential numbering using `#` placeholders
+- `-d`: If present, prepends the current date in `YYYY-MM-DD_` format
+- `-r`: Replaces all occurrences of a substring in filenames
+- `-h`: Shows help
+
+**2. Directory Validation**
+
+After parsing, the script checks that the directory argument is provided and valid.
+
+**3. Renaming Logic**
+
+The renaming operation is prioritized as follows:
+
+- **Numbering Pattern (`-n`)**:  
+  If a pattern is specified, each file is renamed using the pattern, where each `#` is replaced by a zero-padded sequential counter.
+  - E.g., `-n "img-###"` → `img-001.jpg`, `img-002.jpg`, ...
+- **Search and Replace (`-r`)**:  
+  If specified, all filenames have matching substrings replaced.
+- **Prefix/Suffix/Date**:  
+  If above options are not used, the script applies prefix, suffix, and/or date stamp.
+
+**4. Functions**
+
+- `rename_with_counter`: Handles the sequential numbering operation.
+- `rename_with_replace`: Handles text substitution in filenames.
+- `rename_with_affixes`: Handles prefix/suffix/date.
+
+**5. Extension Handling**
+
+The script always preserves file extensions, even as it modifies the filename portion.
+
+---
+
+## Flow Diagram
+
+### Skeleton Flow
 
 ```
 START
@@ -148,43 +252,55 @@ Print completion message
 END
 ```
 
-## Actual Flow Diagram
+### Actual Flowchart
+
 ![Flow Chart](./images/flow-chart2.png)
 
-## Understanding the Script
-
-### Counter Pattern (`-n`)
-
-When using the `-n` option with a pattern like "file-###":
-- Each # character represents one digit
-- The script will replace these with sequential numbers
-- The number of # characters determines padding (e.g., ### will produce 001, 002, etc.)
-
-### Search and Replace (`-r`)
-
-The `-r` option follows this pattern:
-- First argument is the text to search for
-- Second argument is the replacement text
-- All occurrences in each filename will be replaced
-
-### Prefix, Suffix, and Date
-
-These options can be combined:
-- Prefix is added at the start of the filename
-- Date is added before the prefix in YYYY-MM-DD_ format
-- Suffix is added before the extension
+---
 
 ## Limitations
 
-- The script processes only files in the specified directory (not subdirectories)
-- Files are processed in the order returned by the shell
-- No conflict handling for duplicate filenames
-- Limited error checking for edge cases
+- Only processes files in the top-level of the specified directory (no recursion).
+- If two files would be renamed to the same name, one will overwrite the other—**no conflict resolution**.
+- No dry-run/preview mode—changes are immediate.
+- Minimal error handling for edge cases (permissions, file name collisions, special characters).
+
+---
 
 ## Future Improvements
 
-- Add recursive operation for subdirectories
-- Preview changes before applying
-- Support for regular expressions in search/replace
-- Add undo functionality
-- Handle filename conflicts
+- Recursive (subdirectory) support
+- Preview/dry-run mode before renaming
+- Conflict detection and safe handling
+- Support for regex-based renaming
+- Undo/rollback functionality
+
+---
+
+
+### Contributions
+
+Pull requests and feedback are welcome!
+
+---
+
+## Appendix: Script Structure
+
+- **Help Function:**  
+  Shows usage and examples.
+- **Option Parsing:**  
+  Uses `getopts` to handle flags.
+- **Validation:**  
+  Ensures directory exists.
+- **Logic:**  
+  Decides which renaming operation to invoke.
+- **Three Main Operations:**  
+  1. Numbering (`rename_with_counter`)
+  2. Search/Replace (`rename_with_replace`)
+  3. Affix/Date addition (`rename_with_affixes`)
+- **Completion:**  
+  Prints a summary message.
+
+---
+
+**For further details, read through the script comments or run with `-h` for on-demand help.**
