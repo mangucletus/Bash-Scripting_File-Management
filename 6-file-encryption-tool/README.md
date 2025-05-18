@@ -1,103 +1,215 @@
 # File Encryption Tool Documentation
 
+A robust Bash script for secure file encryption and decryption using OpenSSL's AES-256-CBC cipher, PBKDF2 key derivation, and strong password-based protection.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Features](#features)
+- [Usage](#usage)
+- [Examples](#examples)
+- [How It Works](#how-it-works)
+- [Technical Details](#technical-details)
+- [Security Considerations](#security-considerations)
+- [Limitations](#limitations)
+- [Demo Screenshots](#demo-screenshots)
+- [Troubleshooting](#troubleshooting)
+- [Flow Diagram](#flow-diagram)
+- [Best Practices](#best-practices)
+- [Further Improvements](#further-improvements)
+
+---
+
 ## Overview
 
-This documentation covers a simple bash script for encrypting and decrypting files using OpenSSL's AES-256-CBC encryption algorithm with password-based protection.
+This documentation covers a Bash script for encrypting and decrypting files using OpenSSL's AES-256-CBC encryption algorithm with password-based protection. The script is designed for simplicity, security, and portability, making it suitable for both personal and professional use cases where file confidentiality is required.
+
+---
 
 ## Requirements
 
-- Bash shell
-- OpenSSL installed on your system
+- **Bash shell** (Linux, macOS, or WSL on Windows)
+- **OpenSSL** (must be installed and available in your `$PATH`)
+  - Check with: `openssl version`
+- **Standard Unix utilities**: `read`, `echo`, `command`, etc.
+
+---
 
 ## Installation
 
-1. Download the `file_encryption.sh` script to your computer
+1. Download the `file_encryption.sh` script to your computer.
 2. Make it executable:
    ```bash
    chmod +x file_encryption.sh
    ```
+3. (Optional) Move it to a directory in your `$PATH` for global access.
+
+---
 
 ## Features
 
-- File encryption using AES-256-CBC algorithm
-- Password-based encryption/decryption
-- Salt and strong key derivation function (PBKDF2)
-- Simple command-line interface
+- **AES-256-CBC encryption**: Strong, industry-standard symmetric cipher.
+- **Password-based encryption/decryption**: No key files required.
+- **Salted encryption**: Adds randomness to prevent rainbow table attacks.
+- **PBKDF2 key derivation**: Uses 10,000 iterations for slow brute-force resistance.
+- **Hidden password input**: Prevents password leakage via terminal.
+- **Error handling**: Detects missing dependencies, mismatched passwords, and failed operations.
+- **No plaintext password on disk**: Password is only in memory during execution.
+- **Simple CLI**: Minimal, clear command-line interface.
+
+---
 
 ## Usage
 
-### Basic Command Structure
+### Command Syntax
 
 ```bash
-./file_encryption.sh [action] [input_file] [output_file]
+./file_encryption.sh [encrypt|decrypt] [input_file] [output_file]
 ```
 
-Where:
-- `[action]` is either `encrypt` or `decrypt`
-- `[input_file]` is the file you want to process
-- `[output_file]` is where the result will be saved
+- `encrypt`: Encrypts the input file and writes the result to the output file.
+- `decrypt`: Decrypts the input file and writes the result to the output file.
+- `[input_file]`: Path to the file to encrypt or decrypt.
+- `[output_file]`: Path to save the encrypted or decrypted file.
 
-### Examples
+### Arguments
 
-Encrypt a file:
+- **Action**: `encrypt` or `decrypt`
+- **Input file**: File to be encrypted or decrypted (must exist)
+- **Output file**: Destination for the resulting file (will be overwritten if exists)
+
+---
+
+## Examples
+
+**Encrypt a file:**
 ```bash
 ./file_encryption.sh encrypt secret.txt secret.enc
 ```
+- Prompts for a password (twice for confirmation).
+- Produces `secret.enc` as the encrypted output.
 
-Decrypt a file:
+**Decrypt a file:**
 ```bash
 ./file_encryption.sh decrypt secret.enc secret_decrypted.txt
 ```
+- Prompts for the password.
+- Produces `secret_decrypted.txt` if the password is correct.
+
+---
 
 ## How It Works
 
 ### Encryption Process
 
-1. Script checks if OpenSSL is installed
-2. User provides the input file, output file, and a password
-3. Password is confirmed by entering it twice
-4. OpenSSL encrypts the file using AES-256-CBC with:
-   - Salt for added randomness
-   - PBKDF2 for secure key derivation
-   - 10,000 iterations to make brute force attacks harder
-5. Encrypted file is saved to the specified output location
+1. **Dependency Check**: Verifies that OpenSSL is installed using `command -v openssl`.
+2. **Input Validation**: Checks that the input file exists and is a regular file.
+3. **Password Prompt**: Securely prompts for a password (twice for confirmation) using `read -s`.
+4. **OpenSSL Invocation**:
+   - Uses `openssl enc -aes-256-cbc -salt -pbkdf2 -iter 10000`.
+   - Reads the password from stdin (`-pass stdin`).
+   - Writes the encrypted output to the specified file.
+5. **Result Handling**: Checks the exit status of OpenSSL and reports success or failure.
 
 ### Decryption Process
 
-1. Script checks if OpenSSL is installed
-2. User provides the encrypted file, output file, and the password
-3. OpenSSL attempts to decrypt using the provided password
-4. If successful, the decrypted content is saved to the output file
-5. If unsuccessful (wrong password), an error is shown
+1. **Dependency Check**: Verifies OpenSSL is installed.
+2. **Input Validation**: Checks that the encrypted file exists.
+3. **Password Prompt**: Securely prompts for the password.
+4. **OpenSSL Invocation**:
+   - Uses `openssl enc -d -aes-256-cbc -pbkdf2 -iter 10000`.
+   - Reads the password from stdin.
+   - Writes the decrypted output to the specified file.
+5. **Result Handling**: If decryption fails, deletes any partial output and reports an error.
+
+---
+
+## Technical Details
+
+### OpenSSL Command Options
+
+- `enc`: OpenSSL's symmetric encryption command.
+- `-aes-256-cbc`: 256-bit AES in CBC mode.
+- `-salt`: Adds an 8-byte random salt to the output (stored in the file header).
+- `-pbkdf2`: Uses PBKDF2 for key derivation (recommended over legacy EVP_BytesToKey).
+- `-iter 10000`: 10,000 PBKDF2 iterations for increased brute-force resistance.
+- `-pass stdin`: Reads password from standard input (not from command line or environment).
+
+### Password Handling
+
+- Password is never echoed to the terminal (`read -s`).
+- For encryption, password is confirmed by entering it twice.
+- For decryption, password is entered once.
+- Password is not stored on disk or in environment variables.
+
+### File Handling
+
+- Input file must exist and be readable.
+- Output file will be created or overwritten.
+- On decryption failure, any partial output is deleted to avoid confusion.
+
+### Security Model
+
+- **Confidentiality**: Ensured by AES-256-CBC and strong password derivation.
+- **Integrity**: Not provided—no HMAC or hash is used. (See Limitations)
+- **Authentication**: Not provided—anyone with the password can decrypt.
+
+---
 
 ## Security Considerations
 
-| Feature | Description | Benefit |
-|---------|-------------|---------|
-| AES-256-CBC | Industry-standard encryption algorithm | Strong security for sensitive files |
-| Password-based | Uses a password for encryption/decryption | No key files to manage |
-| Salt | Adds random data to the encryption process | Prevents attacks using precomputed tables |
-| PBKDF2 | Password-Based Key Derivation Function 2 | Slows down brute force attacks |
-| 10,000 iterations | Multiple rounds of key derivation | Makes password cracking more difficult |
-| Hidden password input | Password doesn't appear on screen when typing | Prevents shoulder-surfing |
+| Feature            | Description                                   | Benefit                                 |
+|--------------------|-----------------------------------------------|-----------------------------------------|
+| AES-256-CBC        | Strong symmetric encryption                   | Protects sensitive files                |
+| Password-based     | User supplies password                        | No key files to lose or manage          |
+| Salt               | Random data added to encryption               | Prevents rainbow table attacks          |
+| PBKDF2             | Key derivation with 10,000 iterations         | Slows brute-force attacks               |
+| Hidden password    | Password input is not echoed                  | Prevents shoulder-surfing               |
+
+**Important:** The security of your data depends on the strength and secrecy of your password. Use long, random, and unique passwords.
+
+---
 
 ## Limitations
 
-- Security depends on the strength of your password
-- No file integrity verification
-- Password is temporarily in memory as plaintext
-- Not suitable for extremely sensitive information
+- **No file integrity verification**: The script does not add a hash or HMAC. Corrupted or tampered files may not be detected.
+- **Password in memory**: The password is stored in memory during execution, but not on disk.
+- **No password recovery**: If you forget your password, the data is unrecoverable.
+- **No compression**: Files are not compressed before encryption.
+- **Not suitable for highly regulated or extremely sensitive data**: For such use cases, consider tools with authenticated encryption and integrity checks.
+
+---
+
+## Demo Screenshots
+
+Below are screenshots showing the script in action:
+
+**1. Encryption Prompt and Output**
+
+![Test 1](./images/test1.png)
+
+**2. Decryption Prompt and Output**
+
+![Test 2](./images/test2.png)
+
+---
 
 ## Troubleshooting
 
-| Problem | Possible Solution |
-|---------|-------------------|
-| "OpenSSL is not installed" | Install OpenSSL using your package manager (e.g., `apt-get install openssl` on Ubuntu) |
-| "Passwords do not match" | Make sure you type the same password both times when encrypting |
-| "Decryption failed" | Ensure you're using the correct password and that the file hasn't been corrupted |
-| "Input file does not exist" | Check that you've specified the correct file path |
+| Problem                        | Solution                                                                 |
+|---------------------------------|--------------------------------------------------------------------------|
+| "OpenSSL is not installed"      | Install OpenSSL (`sudo apt install openssl` or `brew install openssl`)   |
+| "Passwords do not match"        | Re-run and ensure both password entries are identical                    |
+| "Decryption failed"             | Check password and file integrity; ensure correct file and password      |
+| "Input file does not exist"     | Verify the file path and try again                                       |
 
-## Flowchart
+---
+
+## Flow Diagram
 
 ```
 ┌─────────────────┐
@@ -138,21 +250,36 @@ Decrypt a file:
     └───────────┘
 ```
 
-## Actual Flow Diagram
+### Actual Flow Diagram
+
 ![Flow Chart](./images/flow-chart6.svg)
 
+---
 
 ## Best Practices
 
-1. Use strong, unique passwords for different files
-2. Store encrypted files securely
-3. Back up your files before encryption
-4. Remember your passwords - there's no recovery process
-5. For extremely sensitive data, consider additional security measures
+1. **Use strong, unique passwords** for each file or set of files.
+2. **Store encrypted files securely** (e.g., in a safe location or cloud storage).
+3. **Back up your files** before encryption to avoid accidental data loss.
+4. **Remember your passwords**—there is no recovery process.
+5. **For highly sensitive data**, consider additional security measures (e.g., file integrity checks, hardware tokens, or using authenticated encryption modes like GCM).
+
+---
 
 ## Further Improvements
 
-- Add file integrity verification
-- Implement key files instead of or alongside passwords
-- Add compression before encryption
-- Create a more user-friendly interface
+- Add file integrity verification (e.g., HMAC or hash).
+- Support key files in addition to passwords.
+- Add compression before encryption for space savings.
+- Provide a more user-friendly or interactive interface.
+- Support batch encryption/decryption.
+- Implement authenticated encryption (e.g., AES-GCM).
+
+---
+
+## Contributing
+
+Pull requests and suggestions are welcome! Please open an issue for bugs or feature requests.
+
+---
+
